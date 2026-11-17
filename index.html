@@ -41,6 +41,7 @@
     if (!/\.googleusercontent\.com$|^https:\/\/script\.google\.com$/.test(e.origin)) return;
     const d = e.data;
     if (d && d.type === "att27-token") set(d.token || null);
+    if (d && d.type === "att27-reload") location.reload();   // 앱이 업데이트되면 새 버전으로 다시 열기
   });
 </script>
 </body>
