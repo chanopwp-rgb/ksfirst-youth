@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>마을출석</title>
+<!-- 홈 화면 앱 설정 -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="마을출석">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f5f2ea">
+<style>
+  html, body { margin: 0; height: 100%; background: #f5f2ea; }
+  body { padding-top: env(safe-area-inset-top); box-sizing: border-box; }
+  iframe { display: block; width: 100%; height: 100%; border: 0; }
+  .loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; font: 15px sans-serif; color: #6c756f; z-index: -1; }
+</style>
+</head>
+<body>
+<div class="loading">불러오는 중…</div>
+<iframe id="app" title="마을 출석체크" allow="clipboard-write"></iframe>
+<script>
+  // ▼▼▼ 여기에 Apps Script 웹앱 주소(/exec로 끝나는 주소)를 넣으세요 ▼▼▼
+  const APP_URL = "https://script.google.com/macros/s/여기에_배포_ID/exec";
+  // ▲▲▲ 이 한 줄만 바꾸면 됩니다 ▲▲▲
+
+  const KEY = "att27:token";
+  const get = () => { try { return localStorage.getItem(KEY); } catch (e) { return null; } };
+  const set = t => { try { t ? localStorage.setItem(KEY, t) : localStorage.removeItem(KEY); } catch (e) {} };
+
+  // 로그인 정보를 이 페이지가 기억해 두었다가, 앱을 열 때 넘겨준다 (홈 화면 앱을 껐다 켜도 로그인 유지)
+  const t = get();
+  document.getElementById("app").src = APP_URL + (t ? "?t=" + encodeURIComponent(t) : "");
+
+  // 앱이 로그인/로그아웃하면 알려 준다
+  window.addEventListener("message", e => {
+    if (!/\.googleusercontent\.com$|^https:\/\/script\.google\.com$/.test(e.origin)) return;
+    const d = e.data;
+    if (d && d.type === "att27-token") set(d.token || null);
+  });
+</script>
+</body>
+</html>
